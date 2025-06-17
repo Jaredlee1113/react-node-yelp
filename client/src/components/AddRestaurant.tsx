@@ -15,10 +15,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-const RangeSelect = () => {
+const RangeSelect = ({ field }) => {
     const rangeLength = new Array(5).fill(0).map((_, i) => i + 1);
     return (
-        <Select defaultValue="0">
+        <Select defaultValue={field.value} onValueChange={field.onChange}>
             <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a range" />
             </SelectTrigger>
@@ -41,9 +41,15 @@ const formSchema = z.object({
     location: z.string().min(2, {
         message: "At least 2 characters.",
     }),
-    price_range: z.string().min(1, {
-        message: "Please select a price range.",
-    }),
+    price_range: z.string().refine(
+        (val) => {
+            const num = Number(val);
+            return !isNaN(num) && num > 0;
+        },
+        {
+            message: "Please select a price range greater than 0.",
+        }
+    ),
 });
 
 export default function AddRestaurant() {
@@ -57,8 +63,6 @@ export default function AddRestaurant() {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
         console.log(values);
     }
 
@@ -72,7 +76,7 @@ export default function AddRestaurant() {
                     control={form.control}
                     name="name"
                     render={({ field }) => (
-                        <FormItem className="w-60 pr-2">
+                        <FormItem className="w-120 pr-2">
                             <FormControl>
                                 <Input className="w-full" placeholder="Name" {...field} />
                             </FormControl>
@@ -84,7 +88,7 @@ export default function AddRestaurant() {
                     control={form.control}
                     name="location"
                     render={({ field }) => (
-                        <FormItem className="w-60 pr-2">
+                        <FormItem className="w-120 pr-2">
                             <FormControl>
                                 <Input className="w-full" placeholder="Location" {...field} />
                             </FormControl>
@@ -96,9 +100,9 @@ export default function AddRestaurant() {
                     control={form.control}
                     name="price_range"
                     render={({ field }) => (
-                        <FormItem className="w-60 pr-2">
+                        <FormItem className="w-120 pr-2">
                             <FormControl>
-                                <RangeSelect />
+                                <RangeSelect field={field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
