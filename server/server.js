@@ -1,9 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import db from "./db/index.js";
+import cors from "cors";
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 // get all restaurants

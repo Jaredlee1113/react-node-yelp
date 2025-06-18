@@ -38,7 +38,6 @@ export const columns: ColumnDef<Restaurant>[] = [
         header: "Operations",
         cell: ({ row }) => {
             const restaurant = row.original;
-            console.log(" restaurant:", restaurant);
             return (
                 <div>
                     <Button className="mr-2">Edit</Button>
