@@ -1,6 +1,28 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Rating, RatingButton } from "@/components/ui/shadcn-io/rating";
+import RestaurantFinder from "@/api/RestaurantFinder";
+import { RestaurantsContext } from "@/context/RestaurantsContext";
+import { useContext } from "react";
+
+const OperationColumn = ({ restaurant }) => {
+    const { restaurants, setRestaurants } = useContext(RestaurantsContext);
+    const handleDelete = async (id: string) => {
+        try {
+            const res = await RestaurantFinder.delete(`/${id}`);
+            setRestaurants(restaurants.filter((item) => item.id !== id));
+            console.log(" handleDelete ~ res:", res);
+        } catch (error) {
+            console.log(" handleDelete ~ error:", error);
+        }
+    };
+    return (
+        <div>
+            <Button className="mr-2">Edit</Button>
+            <Button onClick={() => handleDelete(restaurant.id)}>Delete</Button>
+        </div>
+    );
+};
 
 export type Restaurant = {
     id: string;
@@ -38,12 +60,7 @@ export const columns: ColumnDef<Restaurant>[] = [
         header: "Operations",
         cell: ({ row }) => {
             const restaurant = row.original;
-            return (
-                <div>
-                    <Button className="mr-2">Edit</Button>
-                    <Button>Delete</Button>
-                </div>
-            );
+            return <OperationColumn restaurant={restaurant} />;
         },
     },
 ];

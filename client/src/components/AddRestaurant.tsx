@@ -21,7 +21,7 @@ import { RestaurantsContext } from "@/context/RestaurantsContext";
 const RangeSelect = ({ field }) => {
     const rangeLength = new Array(5).fill(0).map((_, i) => i + 1);
     return (
-        <Select defaultValue={field.value} onValueChange={field.onChange}>
+        <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a range" />
             </SelectTrigger>
@@ -67,7 +67,6 @@ export default function AddRestaurant() {
     const { addRestaurant } = useContext(RestaurantsContext);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values);
         const { name, location, price_range } = values;
         try {
             const res = await RestaurantFinder.post("/", {
@@ -75,7 +74,8 @@ export default function AddRestaurant() {
                 location,
                 price_range,
             });
-            addRestaurant(values);
+            addRestaurant(res.data.data);
+            form.reset();
         } catch (error) {
             console.log(" onSubmit ~ error:", error);
         }
