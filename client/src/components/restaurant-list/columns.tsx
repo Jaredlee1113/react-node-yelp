@@ -4,6 +4,7 @@ import { Rating, RatingButton } from "@/components/ui/shadcn-io/rating";
 import RestaurantFinder from "@/api/RestaurantFinder";
 import { RestaurantsContext } from "@/context/RestaurantsContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router";
 
 const OperationColumn = ({ restaurant }) => {
     const { restaurants, setRestaurants } = useContext(RestaurantsContext);
@@ -16,9 +17,18 @@ const OperationColumn = ({ restaurant }) => {
             console.log(" handleDelete ~ error:", error);
         }
     };
+
+    const navigate = useNavigate();
+
+    const handleEdit = (id: string) => {
+        navigate(`/restaurant/${id}/update`);
+    };
+
     return (
         <div>
-            <Button className="mr-2">Edit</Button>
+            <Button className="mr-2" onClick={() => handleEdit(restaurant.id)}>
+                Edit
+            </Button>
             <Button onClick={() => handleDelete(restaurant.id)}>Delete</Button>
         </div>
     );
@@ -43,17 +53,24 @@ export const columns: ColumnDef<Restaurant>[] = [
     {
         accessorKey: "price_range",
         header: "Price Range",
+        cell: ({ row }) => {
+            const { price_range } = row.original;
+            return <div>{"$".repeat(Number(price_range))}</div>;
+        },
     },
     {
         accessorKey: "rating",
         header: "Ratings",
-        cell: () => (
-            <Rating defaultValue={3}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <RatingButton key={index} />
-                ))}
-            </Rating>
-        ),
+        cell: ({ row }) => {
+            const { price_range } = row.original;
+            return (
+                <Rating defaultValue={Number(price_range)}>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <RatingButton key={index} />
+                    ))}
+                </Rating>
+            );
+        },
     },
     {
         accessorKey: "operations",

@@ -10,11 +10,31 @@ app.use(express.json());
 // get all restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
     try {
-        const { rows } = await db.query("SELECT * FROM restaurants");
+        const { rowCount, rows } = await db.query("SELECT * FROM restaurants;");
         const data = res.json({
             status: "success",
-            count: rows.length,
+            count: rowCount,
             data: rows,
+        });
+    } catch (error) {
+        console.log("Failed to fetch data:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Failed to fetch data",
+        });
+    }
+});
+
+// get a restaurant by id
+app.get("/api/v1/restaurants/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { rowCount, rows } = await db.query("SELECT * FROM restaurants WHERE id = $1;", [id]);
+        console.log(" app.get ~ res:", res);
+        const data = res.json({
+            status: "success",
+            count: rowCount,
+            data: rows[0],
         });
     } catch (error) {
         console.log("Failed to fetch data:", error);
@@ -30,7 +50,7 @@ app.post("/api/v1/restaurants", async (req, res) => {
     const { name, location, price_range } = req.body;
     try {
         const { rows } = await db.query(
-            "INSERT INTO restaurants (name, location, price_range) VALUES ($1, $2, $3) RETURNING name, location, price_range",
+            "INSERT INTO restaurants (name, location, price_range) VALUES ($1, $2, $3) RETURNING name, location, price_range;",
             [name, location, price_range]
         );
         res.json({
@@ -73,7 +93,7 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
     values.push(id);
 
     const setClause = setClauses.join(", ");
-    const query = `UPDATE restaurants SET ${setClause} WHERE id = $${index} RETURNING *`;
+    const query = `UPDATE restaurants SET ${setClause} WHERE id = $${index} RETURNING *;`;
 
     try {
         const { rows } = await db.query(query, values);
@@ -94,7 +114,7 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
 app.delete("/api/v1/restaurants/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        await db.query("DELETE from restaurants WHERE id = $1", [id]);
+        await db.query("DELETE from restaurants WHERE id = $1;", [id]);
         res.status(204).json({
             status: "success",
         });
