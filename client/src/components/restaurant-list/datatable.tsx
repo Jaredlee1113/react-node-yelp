@@ -18,7 +18,11 @@ interface DataTableProps<TData, TValue> {
     data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+    columns,
+    data,
+    handleRowClick,
+}: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
         columns,
@@ -49,7 +53,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 <TableBody>
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                                onClick={() => handleRowClick(row)}
+                            >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

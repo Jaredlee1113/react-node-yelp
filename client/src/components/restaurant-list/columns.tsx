@@ -8,7 +8,9 @@ import { useNavigate } from "react-router";
 
 const OperationColumn = ({ restaurant }) => {
     const { restaurants, setRestaurants } = useContext(RestaurantsContext);
-    const handleDelete = async (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleDelete = async (e: any, id: string) => {
+        e.stopPropagation();
         try {
             const res = await RestaurantFinder.delete(`/${id}`);
             setRestaurants(restaurants.filter((item) => item.id !== id));
@@ -20,16 +22,18 @@ const OperationColumn = ({ restaurant }) => {
 
     const navigate = useNavigate();
 
-    const handleEdit = (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleEdit = (e: any, id: string) => {
+        e.stopPropagation();
         navigate(`/restaurant/${id}/update`);
     };
 
     return (
         <div>
-            <Button className="mr-2" onClick={() => handleEdit(restaurant.id)}>
+            <Button className="mr-2" onClick={(e) => handleEdit(e, restaurant.id)}>
                 Edit
             </Button>
-            <Button onClick={() => handleDelete(restaurant.id)}>Delete</Button>
+            <Button onClick={(e) => handleDelete(e, restaurant.id)}>Delete</Button>
         </div>
     );
 };
@@ -66,7 +70,7 @@ export const columns: ColumnDef<Restaurant>[] = [
             return (
                 <Rating defaultValue={Number(price_range)}>
                     {Array.from({ length: 5 }).map((_, index) => (
-                        <RatingButton key={index} />
+                        <RatingButton key={index} className="text-amber-400" />
                     ))}
                 </Rating>
             );
