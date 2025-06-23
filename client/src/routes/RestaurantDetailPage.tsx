@@ -5,29 +5,17 @@ import React, { useContext } from "react";
 import { Rating, RatingButton } from "@/components/ui/shadcn-io/rating";
 import { Separator } from "@/components/ui/separator";
 import Review from "@/components/Review";
-
-const RestaurantCard = ({ restaurant }) => {
-    const { name, price_range } = restaurant;
-    <div>
-        <div className="flex flex-row justify-between">
-            <span>{name}</span>
-            <Rating defaultValue={Number(price_range)}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <RatingButton key={index} className="text-amber-400" />
-                ))}
-            </Rating>
-        </div>
-        <Separator className="my-4" />
-        <div>xxxxxxxx</div>
-    </div>;
-};
+import StarRating from "@/components/StarRating";
 
 const RestaurantDetailPage = () => {
     const { selectedRestaurant } = useContext(RestaurantsContext);
 
     return (
-        <div>
-            RestaurantDetailPage: {(selectedRestaurant as Restaurant).id}
+        <div className="flex flex-col items-center justify-center gap-4">
+            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+                {selectedRestaurant.name}
+            </h1>
+            <StarRating rating={3.4} />
             <Review />
         </div>
     );
