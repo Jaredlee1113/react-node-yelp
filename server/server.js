@@ -29,11 +29,20 @@ app.get("/api/v1/restaurants", async (req, res) => {
 app.get("/api/v1/restaurants/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const { rowCount, rows } = await db.query("SELECT * FROM restaurants WHERE id = $1;", [id]);
-        const data = res.json({
+        const { rowCount, rows: restaurants } = await db.query(
+            "SELECT * FROM restaurants WHERE id = $1;",
+            [id]
+        );
+        const { rows: reviews } = await db.query("SELECT * FROM reviews where restaurant_id = $1", [
+            id,
+        ]);
+        const data = res.status(200).json({
             status: "success",
             count: rowCount,
-            data: rows[0],
+            data: {
+                restaurant: restaurants[0],
+                reviews,
+            },
         });
     } catch (error) {
         console.log("Failed to fetch data:", error);
@@ -122,6 +131,28 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
         res.status(500).json({
             status: "error",
             message: `Failed to delete data by id = ${id}`,
+        });
+    }
+});
+
+// create a new review
+app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
+    const { name, rate, review } = req.body;
+    const { id } = req.params;
+    try {
+        const { rows } = await db.query(
+            "INSERT INTO reviews (restaurant_id, name, rate, review) VALUES ($1, $2, $3, $4) RETURNING *;",
+            [id, name, rate, review]
+        );
+        res.status(200).json({
+            status: "success",
+            data: rows[0],
+        });
+    } catch (error) {
+        console.log(" app.post ~ error:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Failed to create review",
         });
     }
 });

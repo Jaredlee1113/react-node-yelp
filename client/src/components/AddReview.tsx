@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/select";
 import RestaurantFinder from "@/api/RestaurantFinder";
 import { Textarea } from "@/components/ui/textarea";
-import { useContext } from "react";
-import { RestaurantsContext } from "@/context/RestaurantsContext";
+import { useParams } from "react-router";
 
 const RateSelect = ({ field }) => {
     return (
@@ -58,7 +57,8 @@ const formSchema = z.object({
     }),
 });
 
-export default function AddReview() {
+export default function AddReview({ reviews, setReviews }) {
+    const { id } = useParams();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -71,12 +71,14 @@ export default function AddReview() {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         const { name, rate, review } = values;
         try {
-            const res = await RestaurantFinder.post("/", {
+            const res = await RestaurantFinder.post(`/${id}/addReview`, {
                 name,
                 rate,
                 review,
             });
+            console.log(" onSubmit ~ res:", res);
             form.reset();
+            setReviews([...reviews, res.data.data]);
         } catch (error) {
             console.log(" onSubmit ~ error:", error);
         }
