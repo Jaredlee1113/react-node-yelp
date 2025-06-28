@@ -24,6 +24,8 @@ import {
 import RestaurantFinder from "@/api/RestaurantFinder";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "react-router";
+import { useContext } from "react";
+import { RestaurantsContext } from "@/context/RestaurantsContext";
 
 const RateSelect = ({ field }) => {
     return (
@@ -49,8 +51,8 @@ const formSchema = z.object({
     name: z.string().min(2, {
         message: "Please enter at least 2 character.",
     }),
-    rate: z.string().refine((value) => !isNaN(Number(value)) && Number(value) > 0, {
-        message: "Please select a rate.",
+    rating: z.string().refine((value) => !isNaN(Number(value)) && Number(value) > 0, {
+        message: "Please select a rating.",
     }),
     review: z.string().min(2, {
         message: "Please enter at least 2 character.",
@@ -58,27 +60,34 @@ const formSchema = z.object({
 });
 
 export default function AddReview({ reviews, setReviews }) {
+    const { selectedRestaurant, setSelectedRestaurant } = useContext(RestaurantsContext);
     const { id } = useParams();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            rate: "",
+            rating: "",
             review: "",
         },
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        const { name, rate, review } = values;
+        const { name, rating, review } = values;
         try {
             const res = await RestaurantFinder.post(`/${id}/addReview`, {
                 name,
-                rate,
+                rating,
                 review,
             });
             console.log(" onSubmit ~ res:", res);
             form.reset();
             setReviews([...reviews, res.data.data]);
+            const updatedRestaurant = {
+                ...selectedRestaurant,
+                average_rating: Number(res.data.data.average_rating),
+            };
+            console.log(" onSubmit ~ updatedRestaurant:", updatedRestaurant);
+            setSelectedRestaurant(updatedRestaurant);
         } catch (error) {
             console.log(" onSubmit ~ error:", error);
         }
@@ -106,7 +115,7 @@ export default function AddReview({ reviews, setReviews }) {
                     />
                     <FormField
                         control={form.control}
-                        name="rate"
+                        name="rating"
                         render={({ field }) => (
                             <FormItem className="flex-1">
                                 <FormLabel>Rate</FormLabel>

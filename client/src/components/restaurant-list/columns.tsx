@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Rating, RatingButton } from "@/components/ui/shadcn-io/rating";
+import StarRating from "@/components/StarRating";
 import RestaurantFinder from "@/api/RestaurantFinder";
 import { RestaurantsContext } from "@/context/RestaurantsContext";
 import { useContext } from "react";
@@ -42,6 +42,7 @@ export type Restaurant = {
     id: string;
     name: string;
     location: string;
+    average_rating: number;
     price_range: string;
 };
 
@@ -63,17 +64,11 @@ export const columns: ColumnDef<Restaurant>[] = [
         },
     },
     {
-        accessorKey: "rating",
+        accessorKey: "average_rating",
         header: "Ratings",
         cell: ({ row }) => {
-            const { price_range } = row.original;
-            return (
-                <Rating defaultValue={Number(price_range)}>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <RatingButton key={index} className="text-amber-400" />
-                    ))}
-                </Rating>
-            );
+            const { average_rating } = row.original;
+            return <StarRating rating={average_rating} />;
         },
     },
     {

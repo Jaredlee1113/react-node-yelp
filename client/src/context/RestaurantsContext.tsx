@@ -5,6 +5,7 @@ export declare type Restaurant = {
     name: string;
     location: string;
     price_range: string;
+    average_rating: number;
 };
 
 interface RestaurantsContextInterface {

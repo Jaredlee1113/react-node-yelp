@@ -11,7 +11,7 @@ app.use(express.json());
 app.get("/api/v1/restaurants", async (req, res) => {
     try {
         const { rowCount, rows } = await db.query(
-            "SELECT * FROM restaurants LEFT JOIN (SELECT restaurant_id, COUNT(*), ROUND(AVG(rate),1) as average_rate FROM reviews GROUP BY restaurant_id) reviews ON restaurants.id = reviews.restaurant_id;"
+            "SELECT * FROM restaurants LEFT JOIN (SELECT restaurant_id, COUNT(*), ROUND(AVG(rating),1) as average_rating FROM reviews GROUP BY restaurant_id) reviews ON restaurants.id = reviews.restaurant_id;"
         );
         const data = res.json({
             status: "success",
@@ -32,7 +32,7 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const { rowCount, rows: restaurants } = await db.query(
-            "SELECT * FROM restaurants LEFT JOIN (SELECT restaurant_id, COUNT(*), ROUND(AVG(rate),1) as average_rate FROM reviews GROUP BY restaurant_id) reviews ON restaurants.id = reviews.restaurant_id where id = $1;",
+            "SELECT * FROM restaurants LEFT JOIN (SELECT restaurant_id, COUNT(*), ROUND(AVG(rating),1) as average_rating FROM reviews GROUP BY restaurant_id) reviews ON restaurants.id = reviews.restaurant_id where id = $1;",
             [id]
         );
         const { rows: reviews } = await db.query("SELECT * FROM reviews where restaurant_id = $1", [
@@ -139,16 +139,25 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
 
 // create a new review
 app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
-    const { name, rate, review } = req.body;
+    const { name, rating, review } = req.body;
     const { id } = req.params;
     try {
         const { rows } = await db.query(
-            "INSERT INTO reviews (restaurant_id, name, rate, review) VALUES ($1, $2, $3, $4) RETURNING *;",
-            [id, name, rate, review]
+            "INSERT INTO reviews (restaurant_id, name, rating, review) VALUES ($1, $2, $3, $4) RETURNING *;",
+            [id, name, rating, review]
         );
+
+        const { rows: avg_rows } = await db.query(
+            "SELECT ROUND(AVG(rating), 1) AS average_rating FROM reviews where restaurant_id = $1",
+            [id]
+        );
+        const data = {
+            ...rows[0],
+            ...avg_rows[0],
+        };
         res.status(200).json({
             status: "success",
-            data: rows[0],
+            data,
         });
     } catch (error) {
         console.log(" app.post ~ error:", error);

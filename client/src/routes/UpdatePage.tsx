@@ -84,7 +84,7 @@ export default function UpdatePage() {
         const fetchData = async () => {
             try {
                 const res = await RestaurantFinder.get(`/${id}`);
-                const { name, location, price_range } = res.data.data;
+                const { name, location, price_range } = res.data.data.restaurant;
                 form.setValue("name", name);
                 form.setValue("location", location);
                 form.setValue("price_range", price_range);

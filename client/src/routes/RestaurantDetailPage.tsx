@@ -4,18 +4,24 @@ import type { Restaurant } from "@/context/RestaurantsContext";
 import React, { useContext, useEffect, useState } from "react";
 import ReviewComponent from "@/components/Review";
 import type { Review } from "@/components/Review";
-import StarRate from "@/components/StarRate";
+import StarRate from "@/components/StarRating";
 import AddReview from "@/components/AddReview";
-import { useNavigate } from "react-router";
+import { useParams } from "react-router";
 import RestaurantFinder from "@/api/RestaurantFinder";
 
 const RestaurantDetailPage = () => {
-    const { selectedRestaurant } = useContext(RestaurantsContext);
+    const { selectedRestaurant, setSelectedRestaurant } = useContext(RestaurantsContext);
     const [reviews, setReviews] = useState<Review[]>([]);
-    const navigate = useNavigate();
+    const { id } = useParams();
     useEffect(() => {
         if (!selectedRestaurant) {
-            navigate("/");
+            const fetchRestaurantById = async () => {
+                const res = await RestaurantFinder.get(`/${id}`);
+                const { restaurant, reviews } = res.data.data;
+                setSelectedRestaurant(restaurant);
+                setReviews(reviews);
+            };
+            fetchRestaurantById();
         } else {
             const fetchData = async () => {
                 const res = await RestaurantFinder.get<{
@@ -26,16 +32,17 @@ const RestaurantDetailPage = () => {
             fetchData();
         }
     }, []);
+
     return (
         selectedRestaurant && (
             <div className="flex flex-col items-center justify-center gap-4">
                 <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
                     {selectedRestaurant.name}
                 </h1>
-                <StarRate rate={3.4} showRateNumber />
+                <StarRate rating={selectedRestaurant.average_rating} showRateNumber />
 
                 {reviews && (
-                    <div className="w-full flex flow-row justify-between items-center flex-wrap gap-2">
+                    <div className="w-full flex flow-row justify-start items-center flex-wrap gap-2">
                         {reviews.map((item) => (
                             <ReviewComponent key={item.id} reviewData={item} />
                         ))}

@@ -2,15 +2,18 @@ import React from "react";
 import { Star, StarHalf } from "lucide-react";
 
 declare type StarRateProps = {
-    rate: number;
+    rating: number;
     showRateNumber?: boolean;
 };
 
-const StarRate = ({ rate, showRateNumber }: StarRateProps) => {
+const StarRating = ({ rating, showRateNumber }: StarRateProps) => {
+    if (Number(rating) === 0) {
+        return <span className="text-amber-400">No rating yet</span>;
+    }
     const Stars = () =>
         new Array(5).fill(null).map((_, index) => {
             const serial = index + 1;
-            if (serial <= rate) {
+            if (serial <= rating) {
                 return (
                     <Star
                         key={serial}
@@ -19,7 +22,7 @@ const StarRate = ({ rate, showRateNumber }: StarRateProps) => {
                         color={"var(--color-amber-400)"}
                     />
                 );
-            } else if (serial - rate < 1 && serial - rate > 0) {
+            } else if (serial - rating < 1 && serial - rating > 0) {
                 return (
                     <StarHalf
                         key={serial}
@@ -33,11 +36,11 @@ const StarRate = ({ rate, showRateNumber }: StarRateProps) => {
             }
         });
     return (
-        <div className="flex gap-0.5">
+        <div className="flex gap-0.5" title={rating.toString()}>
             <Stars />
-            {showRateNumber && <span className="text-amber-400">({rate})</span>}
+            {showRateNumber && <span className="text-amber-400">({rating})</span>}
         </div>
     );
 };
 
-export default StarRate;
+export default StarRating;
