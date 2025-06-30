@@ -12,7 +12,7 @@ const OperationColumn = ({ restaurant }) => {
     const handleDelete = async (e: any, id: string) => {
         e.stopPropagation();
         try {
-            const res = await RestaurantFinder.delete(`/${id}`);
+            const res = await RestaurantFinder.delete(`/restaurants/${id}`);
             setRestaurants(restaurants.filter((item) => item.id !== id));
             console.log(" handleDelete ~ res:", res);
         } catch (error) {

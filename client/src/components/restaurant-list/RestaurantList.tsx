@@ -10,7 +10,7 @@ export function RestaurantList() {
     const { restaurants, setRestaurants, setSelectedRestaurant } = useContext(RestaurantsContext);
     useEffect(() => {
         const fetchData = async () => {
-            const res = await RestaurantFinder.get("/");
+            const res = await RestaurantFinder.get("/restaurants");
             setRestaurants(res.data.data);
         };
         fetchData();

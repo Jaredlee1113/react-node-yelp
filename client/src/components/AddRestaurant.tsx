@@ -69,7 +69,7 @@ export default function AddRestaurant() {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         const { name, location, price_range } = values;
         try {
-            const res = await RestaurantFinder.post("/", {
+            const res = await RestaurantFinder.post("/restaurants", {
                 name,
                 location,
                 price_range,

@@ -74,19 +74,18 @@ export default function AddReview({ reviews, setReviews }) {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         const { name, rating, review } = values;
         try {
-            const res = await RestaurantFinder.post(`/${id}/addReview`, {
+            const res = await RestaurantFinder.post("/reviews", {
                 name,
                 rating,
                 review,
+                restaurant_id: id,
             });
-            console.log(" onSubmit ~ res:", res);
             form.reset();
             setReviews([...reviews, res.data.data]);
             const updatedRestaurant = {
                 ...selectedRestaurant,
                 average_rating: Number(res.data.data.average_rating),
             };
-            console.log(" onSubmit ~ updatedRestaurant:", updatedRestaurant);
             setSelectedRestaurant(updatedRestaurant);
         } catch (error) {
             console.log(" onSubmit ~ error:", error);

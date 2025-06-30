@@ -83,7 +83,7 @@ export default function UpdatePage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await RestaurantFinder.get(`/${id}`);
+                const res = await RestaurantFinder.get(`/restaurants/${id}`);
                 const { name, location, price_range } = res.data.data.restaurant;
                 form.setValue("name", name);
                 form.setValue("location", location);
@@ -98,7 +98,7 @@ export default function UpdatePage() {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         const { name, location, price_range } = values;
         try {
-            await RestaurantFinder.put(`/${id}`, {
+            await RestaurantFinder.put(`/restaurants/${id}`, {
                 name,
                 location,
                 price_range,

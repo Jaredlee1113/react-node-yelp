@@ -16,7 +16,7 @@ const RestaurantDetailPage = () => {
     useEffect(() => {
         if (!selectedRestaurant) {
             const fetchRestaurantById = async () => {
-                const res = await RestaurantFinder.get(`/${id}`);
+                const res = await RestaurantFinder.get(`/restaurants/${id}`);
                 const { restaurant, reviews } = res.data.data;
                 setSelectedRestaurant(restaurant);
                 setReviews(reviews);
@@ -26,7 +26,7 @@ const RestaurantDetailPage = () => {
             const fetchData = async () => {
                 const res = await RestaurantFinder.get<{
                     data: { restaurant: Restaurant; reviews: Review[] };
-                }>(`/${selectedRestaurant.id}`);
+                }>(`/restaurants/${selectedRestaurant.id}`);
                 setReviews(res.data.data.reviews);
             };
             fetchData();
