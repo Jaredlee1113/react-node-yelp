@@ -39,6 +39,7 @@ export const getRestaurantById = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error(" getRestaurantById ~ error:", error);
         res.status(500).json({
             status: "error",
             message: "Failed to fetch data",
