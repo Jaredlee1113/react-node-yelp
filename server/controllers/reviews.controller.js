@@ -12,7 +12,7 @@ export const getReviews = async (req, res) => {
             status: "success",
             data: {
                 count: rowCount,
-                review: rows[0],
+                reviews: rows,
             },
         });
     } catch (error) {
@@ -61,13 +61,15 @@ export const createReview = async (req, res) => {
             "SELECT ROUND(AVG(rating), 1) AS average_rating FROM reviews where restaurant_id = $1",
             [restaurant_id]
         );
-        const data = {
+        const reviewRes = {
             ...rows[0],
             ...avg_rows[0],
         };
         res.status(200).json({
             status: "success",
-            data,
+            data: {
+                review: reviewRes,
+            },
         });
     } catch (error) {
         res.status(500).json({
@@ -106,10 +108,18 @@ export const updateReview = async (req, res) => {
             } RETURNING *;`,
             values
         );
+        const { rows: avg_rows } = await db.query(
+            "SELECT ROUND(AVG(rating), 1) AS average_rating FROM reviews where restaurant_id = $1",
+            [restaurant_id]
+        );
+        const review = {
+            ...rows[0],
+            ...avg_rows[0],
+        };
         res.status(200).json({
             status: "success",
             data: {
-                review: rows[0],
+                review,
             },
         });
     } catch (error) {

@@ -72,7 +72,7 @@ describe("Restaurants Controllers", () => {
         const req = { body: newRestaurant };
         await createRestaurant(req, res);
         res.status.mockResolvedValueOnce(200);
-        res.status.mockResolvedValueOnce({
+        res.json.mockResolvedValueOnce({
             status: "success",
             data: newRestaurant,
         });
@@ -90,7 +90,7 @@ describe("Restaurants Controllers", () => {
         const req = { body: updateRestaurantData, params: { id: 5 } };
         await updateRestaurant(req, res);
         res.status.mockResolvedValueOnce(200);
-        res.status.mockResolvedValueOnce({
+        res.json.mockResolvedValueOnce({
             status: "success",
             data: updateRestaurantData,
         });
@@ -101,8 +101,9 @@ describe("Restaurants Controllers", () => {
         const req = { params: { id: 5 } };
         await deleteRestaurant(req, res);
         res.status.mockResolvedValueOnce(200);
-        res.status.mockResolvedValueOnce({
+        res.json.mockResolvedValueOnce({
             status: "success",
+            data: updateRestaurantData,
         });
     });
 });
