@@ -103,7 +103,6 @@ describe("Restaurants Controllers", () => {
         res.status.mockResolvedValueOnce(200);
         res.json.mockResolvedValueOnce({
             status: "success",
-            data: updateRestaurantData,
         });
     });
 });

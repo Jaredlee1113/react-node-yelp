@@ -14,7 +14,6 @@ const OperationColumn = ({ restaurant }) => {
         try {
             const res = await RestaurantFinder.delete(`/restaurants/${id}`);
             setRestaurants(restaurants.filter((item) => item.id !== id));
-            console.log(" handleDelete ~ res:", res);
         } catch (error) {
             console.log(" handleDelete ~ error:", error);
         }
