@@ -61,14 +61,11 @@ export const createReview = async (req, res) => {
             "SELECT ROUND(AVG(rating), 1) AS average_rating FROM reviews where restaurant_id = $1",
             [restaurant_id]
         );
-        const reviewRes = {
-            ...rows[0],
-            ...avg_rows[0],
-        };
         res.status(200).json({
             status: "success",
             data: {
-                review: reviewRes,
+                review: rows[0],
+                ...avg_rows[0],
             },
         });
     } catch (error) {
@@ -112,14 +109,11 @@ export const updateReview = async (req, res) => {
             "SELECT ROUND(AVG(rating), 1) AS average_rating FROM reviews where restaurant_id = $1",
             [restaurant_id]
         );
-        const review = {
-            ...rows[0],
-            ...avg_rows[0],
-        };
         res.status(200).json({
             status: "success",
             data: {
-                review,
+                review: rows[0],
+                ...avg_rows[0],
             },
         });
     } catch (error) {

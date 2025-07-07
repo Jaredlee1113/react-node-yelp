@@ -36,7 +36,7 @@ const StarRating = ({ rating, showRateNumber }: StarRateProps) => {
             }
         });
     return (
-        <div className="flex gap-0.5" title={rating.toString()}>
+        <div className="flex gap-0.5" title={rating?.toString() || "0"}>
             <Stars />
             {showRateNumber && <span className="text-amber-400">({rating})</span>}
         </div>

@@ -24,8 +24,9 @@ import {
 import RestaurantFinder from "@/api/RestaurantFinder";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "react-router";
-import { useContext } from "react";
-import { RestaurantsContext } from "@/context/RestaurantsContext";
+import { useContext, useEffect } from "react";
+import { RestaurantsContext, type Restaurant } from "@/context/RestaurantsContext";
+import type { Review } from "./Review";
 
 const RateSelect = ({ field }) => {
     return (
@@ -59,7 +60,19 @@ const formSchema = z.object({
     }),
 });
 
-export default function AddReview({ reviews, setReviews }) {
+type AddReviewProps = {
+    reviews: Review[];
+    setReviews: (reviews: Review[]) => void;
+    curReview: Review | null;
+    setCurReview: (review: Review | null) => void;
+};
+
+export default function AddReview({
+    reviews,
+    setReviews,
+    curReview,
+    setCurReview,
+}: AddReviewProps) {
     const { selectedRestaurant, setSelectedRestaurant } = useContext(RestaurantsContext);
     const { id } = useParams();
     const form = useForm<z.infer<typeof formSchema>>({
@@ -73,17 +86,27 @@ export default function AddReview({ reviews, setReviews }) {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         const { name, rating, review } = values;
+        const params = {
+            name,
+            rating,
+            review,
+            restaurant_id: id,
+        };
         try {
-            const res = await RestaurantFinder.post("/reviews", {
-                name,
-                rating,
-                review,
-                restaurant_id: id,
-            });
+            let res;
+            if (curReview) {
+                res = await RestaurantFinder.put(`/reviews/${curReview.id}`, params);
+                const curReviewIndex = reviews.findIndex((review) => review.id === curReview.id);
+                reviews.splice(curReviewIndex, 1, res.data.data.review);
+                setReviews(reviews);
+                setCurReview(null);
+            } else {
+                res = await RestaurantFinder.post("/reviews", params);
+                setReviews([...reviews, res.data.data.review]);
+            }
             form.reset();
-            setReviews([...reviews, res.data.data]);
             const updatedRestaurant = {
-                ...selectedRestaurant,
+                ...(selectedRestaurant as Restaurant),
                 average_rating: Number(res.data.data.average_rating),
             };
             setSelectedRestaurant(updatedRestaurant);
@@ -91,6 +114,14 @@ export default function AddReview({ reviews, setReviews }) {
             console.log(" onSubmit ~ error:", error);
         }
     };
+
+    useEffect(() => {
+        if (!curReview) return;
+        const { name, rating, review } = curReview;
+        form.setValue("name", name);
+        form.setValue("rating", rating.toString());
+        form.setValue("review", review);
+    }, [curReview, form]);
 
     return (
         <Form {...form}>
@@ -142,7 +173,7 @@ export default function AddReview({ reviews, setReviews }) {
                 />
 
                 <FormItem className="flex-1">
-                    <Button type="submit">Add</Button>
+                    <Button type="submit">{curReview ? "Update" : "Add"}</Button>
                 </FormItem>
             </form>
         </Form>

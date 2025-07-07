@@ -23,9 +23,20 @@ export type Review = {
     review: string;
 };
 
-const Review = ({ reviewData }: { reviewData: Review }) => {
+const Review = ({
+    reviewData,
+    setCurReview,
+}: {
+    reviewData: Review;
+    setCurReview: (review: Review) => void;
+}) => {
     const { name, rating, review, id } = reviewData;
     const { selectedRestaurant } = useContext(RestaurantsContext);
+
+    const updateReview = () => {
+        setCurReview({ name, rating, review, id });
+    };
+
     const deleteReview = async (id: string) => {
         try {
             await RestaurantFinder.delete(`/reviews/${id}`, {
@@ -48,8 +59,9 @@ const Review = ({ reviewData }: { reviewData: Review }) => {
                 <span className="leading-7">{review}</span>
             </div>
             <div className="w-full flex justify-end gap-1 p-2">
-                <Button variant="outline">Update</Button>
-
+                <Button variant="outline" onClick={updateReview}>
+                    Update
+                </Button>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button variant="outline">Delete</Button>
