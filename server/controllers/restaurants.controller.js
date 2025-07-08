@@ -112,7 +112,7 @@ export const updateRestaurant = async (req, res) => {
 export const deleteRestaurant = async (req, res) => {
     const { id } = req.params;
     try {
-        await db.query("DELETE from restaurants WHERE id = $1;", [id]);
+        await db.query("DELETE FROM restaurants WHERE id = $1;", [id]);
         res.status(200).json({
             status: "success",
         });

@@ -5,14 +5,14 @@ import RestaurantFinder from "@/api/RestaurantFinder";
 import { RestaurantsContext } from "@/context/RestaurantsContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
+import DeleteAlert from "../DeleteAlert";
 
 const OperationColumn = ({ restaurant }) => {
     const { restaurants, setRestaurants } = useContext(RestaurantsContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleDelete = async (e: any, id: string) => {
-        e.stopPropagation();
+    const handleDelete = async (id: string) => {
         try {
-            const res = await RestaurantFinder.delete(`/restaurants/${id}`);
+            await RestaurantFinder.delete(`/restaurants/${id}`);
             setRestaurants(restaurants.filter((item) => item.id !== id));
         } catch (error) {
             console.log(" handleDelete ~ error:", error);
@@ -32,7 +32,19 @@ const OperationColumn = ({ restaurant }) => {
             <Button className="mr-2" onClick={(e) => handleEdit(e, restaurant.id)}>
                 Edit
             </Button>
-            <Button onClick={(e) => handleDelete(e, restaurant.id)}>Delete</Button>
+            <DeleteAlert
+                description="This action cannot be undone. This will permanently delete the current data and relative reviews."
+                clickEvent={() => handleDelete(restaurant.id)}
+            >
+                <Button
+                    onClick={(e) => {
+                        console.log(" OperationColumn ~ e:", e);
+                        e.stopPropagation();
+                    }}
+                >
+                    Delete
+                </Button>
+            </DeleteAlert>
         </div>
     );
 };
