@@ -7,7 +7,7 @@ declare type StarRateProps = {
 };
 
 const StarRating = ({ rating, showRateNumber }: StarRateProps) => {
-    if (Number(rating) === 0) {
+    if (!rating || Number(rating) === 0) {
         return <span className="text-amber-400">No rating yet</span>;
     }
     const Stars = () =>

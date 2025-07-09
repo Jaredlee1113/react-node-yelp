@@ -38,7 +38,6 @@ const OperationColumn = ({ restaurant }) => {
             >
                 <Button
                     onClick={(e) => {
-                        console.log(" OperationColumn ~ e:", e);
                         e.stopPropagation();
                     }}
                 >
