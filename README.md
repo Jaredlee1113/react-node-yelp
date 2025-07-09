@@ -53,8 +53,10 @@ react-node-yelp/
 
 ### Running Tests
 
--   **Backend: **
+-   **Backend:**
+
     Running tests from the `server` directory:
+
     ```sh
     npm test
     ```
